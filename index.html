@@ -64,7 +64,7 @@
         const nilaiTerpilih = selectBox.value;
         // Menyimpan nilaiTerpilih ke dalam variabel opsi
         opsi = nilaiTerpilih;
-        let conversation = conversations.filter((item) => item.judul === opsi);
+        conversation = conversations.filter((item) => item.judul === opsi);
         conversationContainer.innerHTML = "";
         console.log("Opsi yang dipilih:", opsi);
         console.log(conversation);
@@ -137,7 +137,7 @@
       let englishMaleVoice = voices.find((voice) => voice.lang.startsWith("en") && voice.name.includes("Male"));
 
       function playConversation() {
-        const pengucapan = conversation.conversation.filter((item) => item.penutur === vocal);
+        const pengucapan = conversation[0].conversation.filter((item) => item.penutur === vocal);
         if (!isSpeaking && hitungan < pengucapan.length) {
           console.log(pengucapan[hitungan].penutur);
           console.log(pengucapan[hitungan].teks);

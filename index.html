@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Conversation</title>
+  </head>
+  <body>
+    <div class="w-full min-h-screen flex flex-col items-center pt-10 pb-10">
+      <h1 class="text-gray-700 text-xl font-bold m-3">Conversation</h1>
+      <div class="bg-blue-500 w-96 md:w-1/2 p-2 rounded-lg border border-gray-400 flex flex-col items-center" style="min-height: 15rem">
+        <!-- Select start -->
+        <div class="w-full">
+          <label for="selectBox" class="block text-white text-sm font-bold mb-2">Pilih Opsi:</label>
+          <select id="selectBox" name="selectBox" class="block w-full bg-gray-200 border border-gray-400 hover:bg-gray-300 px-4 py-1 rounded-md leading-tight focus:outline-none focus:bg-white focus:border-gray-500"></select>
+        </div>
+        <div class="w-full max-w-xs flex items-center justify-center gap-2 py-2">
+          <label for="radiovocal">A</label>
+          <input type="radio" name="radiovocal" id="radiovocalA" class="radio" value="B" checked />
+          <label for="radiovocal" class="ml-2">B</label>
+          <input type="radio" name="radiovocal" id="radiovocalB" class="radio" value="A" />
+        </div>
+        <div id="ButtonContainer" class="w-full py-1">
+          <div class="flex justify-center items-center gap-1">
+            <button id="playButton" class="py-1 px-2 bg-blue-400 text-white font-semibold rounded-lg shadow-md transition delay-300 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transform">
+              Play
+            </button>
+            <button id="stopButton" class="py-1 px-2 bg-blue-400 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Stop</button>
+          </div>
+        </div>
+        <!-- Select End -->
+        <!-- Box Text start -->
+        <div class="bg-white w-full rounded-lg m-3 py-3 px-1 flex flex-col" style="min-height: 10rem">
+          <!-- Loop through the conversation array -->
+          <div class="w-full flex flex-col justify-start" id="conversationContainer"></div>
+        </div>
+
+        <!-- Box Text end -->
+      </div>
+    </div>
+
+    <script src="conversation.js"></script>
+    <script>
+      // Mengambil nilai judul dari conversations
+      const judul = conversations.map((conversation) => conversation.judul);
+      // Pilih elemen <select> menggunakan ID
+      const selectBox = document.getElementById("selectBox");
+      // Loop melalui nilai judul dan tambahkan opsi-opsi ke elemen <select>
+      judul.forEach((judulItem) => {
+        const option = document.createElement("option");
+        option.value = judulItem;
+        option.text = judulItem;
+        selectBox.appendChild(option);
+      });
+      let opsi = judul[0];
+      let conversation = conversations.find((item) => item.judul === opsi);
+
+      console.log(conversation.conversation);
+      // Menambahkan event listener untuk mengamati perubahan pada elemen <select>
+      selectBox.addEventListener("change", function () {
+        // Mendapatkan nilai (value) yang dipilih oleh pengguna
+        const nilaiTerpilih = selectBox.value;
+        // Menyimpan nilaiTerpilih ke dalam variabel opsi
+        opsi = nilaiTerpilih;
+        let conversation = conversations.filter((item) => item.judul === opsi);
+        conversationContainer.innerHTML = "";
+        console.log("Opsi yang dipilih:", opsi);
+        console.log(conversation);
+        tampilkanConversation(conversation[0]);
+      });
+
+      // Variabel vocal awalnya diatur ke 'A'
+      let vocal = "B";
+      // Mendapatkan elemen-elemen radio button
+      const radioButtons = document.querySelectorAll('input[type="radio"]');
+      // Menambahkan event listener untuk setiap radio button
+      radioButtons.forEach((radioButton) => {
+        radioButton.addEventListener("change", (event) => {
+          // Memperbarui variabel vocal saat pilihan radio berubah
+          vocal = event.target.value;
+          console.log(vocal);
+        });
+      });
+
+      // Ambil elemen kontainer percakapan
+      const conversationContainer = document.getElementById("conversationContainer");
+
+      tampilkanConversation(conversation);
+
+      function tampilkanConversation(conversationActive) {
+        // Loop melalui array percakapan dan tambahkan elemen sesuai penutur
+        console.log(conversationActive);
+        conversationActive.conversation.forEach((item) => {
+          const divWrapper = document.createElement("div");
+          divWrapper.classList.add("my-1", "px-2", "py-1", "w-full");
+
+          const divMessage = document.createElement("div");
+          divMessage.classList.add("bg-blue-500", "rounded-lg", "w-4/5", "flex", "flex-col-reverse");
+
+          const pText = document.createElement("p");
+          pText.classList.add("text-xs", "text-white", "px-2", "py-1", "md:text-lg");
+          pText.textContent = item.teks;
+
+          divMessage.appendChild(pText);
+          divWrapper.appendChild(divMessage);
+
+          // Tentukan penempatan pesan berdasarkan penutur
+          if (item.penutur === "A") {
+            const hName = document.createElement("h1");
+            hName.classList.add("text-xs", "text-white", "px-2", "py-1", "bg-blue-400");
+            hName.textContent = item.penutur;
+            divMessage.appendChild(hName);
+            divWrapper.classList.add("flex", "justify-start", "w-full");
+            divMessage.classList.add("items-start");
+          } else if (item.penutur === "B") {
+            const hName = document.createElement("h1");
+            hName.classList.add("text-xs", "text-white", "px-2", "py-1", "bg-blue-400");
+            hName.textContent = item.penutur;
+            divMessage.appendChild(hName);
+            divWrapper.classList.add("flex", "justify-end", "w-full");
+            divMessage.classList.add("items-end");
+          }
+
+          // Tambahkan pesan ke dalam kontainer percakapan
+          conversationContainer.appendChild(divWrapper);
+        });
+      }
+
+      //   function playConversation start
+      let hitungan = 0;
+      let isSpeaking = false; // Untuk melacak apakah sedang berbicara atau tidak
+
+      let voices = speechSynthesis.getVoices();
+
+      let englishMaleVoice = voices.find((voice) => voice.lang.startsWith("en") && voice.name.includes("Male"));
+
+      function playConversation() {
+        const pengucapan = conversation.conversation.filter((item) => item.penutur === vocal);
+        if (!isSpeaking && hitungan < pengucapan.length) {
+          console.log(pengucapan[hitungan].penutur);
+          console.log(pengucapan[hitungan].teks);
+          const textToSpeak = pengucapan[hitungan].teks;
+          const utterance = new SpeechSynthesisUtterance(textToSpeak);
+
+          const voices = speechSynthesis.getVoices();
+          const englishMaleVoice = voices.find((voice) => voice.lang.startsWith("en") && voice.name.includes("Male"));
+
+          if (englishMaleVoice) {
+            utterance.voice = englishMaleVoice;
+          } else {
+            console.log("Suara laki-laki dalam bahasa Inggris tidak tersedia.");
+          }
+
+          isSpeaking = true; // Mengubah isSpeaking menjadi false saat percakapan selesai
+          speechSynthesis.speak(utterance);
+
+          utterance.onend = () => {
+            // Ketika suara selesai berbicara, lanjutkan ke percakapan berikutnya
+            hitungan++;
+            console.log("index berikutnya adalah : " + hitungan);
+            isSpeaking = false; // Mengubah isSpeaking menjadi false saat percakapan selesai
+          };
+        } else {
+          hitungan = 0;
+        }
+      }
+
+      function stopConversation() {
+        speechSynthesis.cancel(); // Menghentikan percakapan
+        hitungan = 0; // Mengubah hitungan menjadi 0
+        isSpeaking = false; // Menandakan bahwa percakapan sudah dihentikan
+      }
+
+      const playButton = document.getElementById("playButton");
+      playButton.addEventListener("click", playConversation);
+      const stopButton = document.getElementById("stopButton");
+      stopButton.addEventListener("click", stopConversation);
+      //   function playConversation end
+
+      window.addEventListener("scroll", function () {
+        const ButtonContainer = document.getElementById("ButtonContainer");
+        // Menghitung posisi scroll dari elemen ButtonContainer ke atas
+        const scrollPosition = ButtonContainer.getBoundingClientRect().top + window.scrollY;
+        ButtonContainer.classList.toggle("fixed", window.scrollY > scrollPosition);
+        ButtonContainer.classList.toggle("top-0", window.scrollY > scrollPosition);
+        ButtonContainer.classList.toggle("bg-blue-200", window.scrollY > scrollPosition);
+      });
+
+      //function container button end
+    </script>
+  </body>
+</html>
